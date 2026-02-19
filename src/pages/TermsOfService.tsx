@@ -26,14 +26,7 @@ const TermsOfService = () => {
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-8">
             Terms of Service
           </h1>
-          <p className="text-muted-foreground text-lg mb-8">
-            Last Updated:{" "}
-            {new Date().toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+
 
           <div className="space-y-8 text-foreground/90">
             <section>
@@ -123,20 +116,10 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section>
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                8. Governing Law
-              </h2>
-              <p>
-                These Terms shall be governed and construed in accordance with
-                the laws of Ghana, without regard to its conflict of law
-                provisions.
-              </p>
-            </section>
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">
-                9. Changes
+                8. Changes
               </h2>
               <p>
                 We reserve the right, at our sole discretion, to modify or
@@ -148,7 +131,7 @@ const TermsOfService = () => {
 
             <section>
               <h2 className="text-2xl font-bold text-foreground mb-4">
-                10. Contact Us
+                9. Contact Us
               </h2>
               <p>
                 If you have any questions about these Terms, please contact us

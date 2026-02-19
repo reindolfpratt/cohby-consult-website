@@ -33,7 +33,7 @@ const Hero = ({ onOpenForm }: HeroProps) => {
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-heading font-bold text-primary-foreground mb-6 leading-tight animate-fade-in-up">
             Your Gateway to
-            <span className="block bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent mt-2">
+            <span className="block text-secondary mt-2">
               Global Education Excellence
             </span>
           </h1>

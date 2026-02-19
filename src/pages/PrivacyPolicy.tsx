@@ -26,9 +26,7 @@ const PrivacyPolicy = () => {
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-8">
             Privacy Policy
           </h1>
-          <p className="text-muted-foreground text-lg mb-8">
-            Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </p>
+
 
           <div className="space-y-8 text-foreground/90">
             <section>
