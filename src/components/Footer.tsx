@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/cohby-logo.png";
 
 const Footer = () => {
@@ -22,6 +23,8 @@ const Footer = () => {
               <li><a href="#destinations" className="text-primary-foreground/80 hover:text-secondary transition-colors">Study Destinations</a></li>
               <li><a href="#courses" className="text-primary-foreground/80 hover:text-secondary transition-colors">Programs</a></li>
               <li><a href="/about-us" className="text-primary-foreground/80 hover:text-secondary transition-colors">About Us</a></li>
+              <li><Link to="/terms-of-service" className="text-primary-foreground/80 hover:text-secondary transition-colors">Terms of Service</Link></li>
+              <li><Link to="/privacy-policy" className="text-primary-foreground/80 hover:text-secondary transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -48,7 +51,11 @@ const Footer = () => {
               </li>
               <li className="flex items-start space-x-2">
                 <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />
-                <span className="text-primary-foreground/80">+1 (555) 123-4567</span>
+                <span className="text-primary-foreground/80">+1 343 883 2087</span>
+              </li>
+              <li className="flex items-start space-x-2">
+                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />
+                <span className="text-primary-foreground/80">+44 7424 742415</span>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-secondary" />

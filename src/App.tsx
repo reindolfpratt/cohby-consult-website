@@ -15,6 +15,8 @@ import Programs from "./pages/Programs";
 import WhatWeDo from "./pages/WhatWeDo";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,8 @@ const App = () => (
           <Route path="/study-in-canada" element={<StudyInCanada />} />
           <Route path="/study-in-finland" element={<StudyInFinland />} />
           <Route path="/programs" element={<Programs />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
