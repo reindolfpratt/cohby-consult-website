@@ -290,9 +290,9 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       appendField("00NSj000002uvwv", data["00NSj000002uvwv"] ? "1" : "0");
       appendField("00NSj000002uvyXMAQ", data["00NSj000002uvyXMAQ"]);
 
-      // 4. Map Record Type (Dual naming for safety)
-      appendField("recordType", "012Sj000002A1o6IAC");
-      appendField("RecordTypeId", "012Sj000002A1o6IAC");
+      // 4. Map Record Type (Using 15-char ID for maximum compatibility)
+      appendField("recordType", "012Sj000002A1o6");
+      appendField("RecordTypeId", "012Sj000002A1o6");
 
       // 5. Map Countries of Interest (Multi-Select)
       const selectedCountries = data["00NSj000002uvld"].includes("Other")
