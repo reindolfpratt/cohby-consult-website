@@ -303,12 +303,8 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       );
       setValue("00NSj000002uvwv", data["00NSj000002uvwv"] ? "1" : "0");
       setValue("00NSj000002uvyXMAQ", data["00NSj000002uvyXMAQ"]);
-      setValue("recordType", "012Sj000002A1o6IAC");
-      setValue("RecordTypeId", "012Sj000002A1o6IAC"); // Some orgs use this capitalization
+      setValue("company", data.first_name + " " + data.last_name || "Online Applicant");
       setValue("LeadSource", "Web");
-      setValue("company", data.first_name + " " + data.last_name || "Online Applicant"); // Fallback
-      setValue("debug", "1");
-      setValue("debugEmail", data.email);
 
       form.target = "sf_submission_frame"; // Submit to the hidden iframe
       form.submit();
@@ -349,12 +345,7 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       >
         <input type="hidden" name="oid" value="00DgD000000GzkH" />
         <input type="hidden" name="retURL" value="https://www.cohbyconsult.com/" />
-        <input type="hidden" name="recordType" value="012Sj000002A1o6IAC" />
-        <input type="hidden" name="RecordTypeId" value="012Sj000002A1o6IAC" />
-        <input type="hidden" name="lead_source" value="Web" />
         <input type="hidden" name="company" value="N/A" />
-        <input type="hidden" name="debug" value="1" />
-        <input type="hidden" name="debugEmail" value="info@cohbyconsult.com" />
       </form>
 
       <div className="sf-form-container">
