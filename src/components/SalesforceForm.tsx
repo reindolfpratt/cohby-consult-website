@@ -304,6 +304,7 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       setValue("00NSj000002uvwv", data["00NSj000002uvwv"] ? "1" : "0");
       setValue("00NSj000002uvyXMAQ", data["00NSj000002uvyXMAQ"]);
 
+      form.target = "sf_submission_frame"; // Submit to the hidden iframe
       form.submit();
       setSubmitted(true);
     }
@@ -318,16 +319,22 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
         <CheckCircle2 className="sf-success-icon" />
         <h2>Application Submitted!</h2>
         <p>Thank you for reaching out. Our team will get back to you shortly.</p>
-        <button className="sf-btn-primary" onClick={onClose}>
-          Close
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
+          <button className="sf-btn-primary" onClick={onClose}>
+            Stay on Page
+          </button>
+          <a href="/" className="sf-btn-submit text-center no-underline">
+            Go to Home Page
+          </a>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      {/* Hidden native form that submits to Salesforce */}
+      {/* Hidden native form that submits to Salesforce via iframe */}
+      <iframe name="sf_submission_frame" style={{ display: "none" }}></iframe>
       <form
         ref={nativeFormRef}
         action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgD000000GzkH"
@@ -335,7 +342,7 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
         style={{ display: "none" }}
       >
         <input type="hidden" name="oid" value="00DgD000000GzkH" />
-        <input type="hidden" name="retURL" value="https://www.cohbyconsult.com/contact-us" />
+        <input type="hidden" name="retURL" value="https://www.cohbyconsult.com/" />
       </form>
 
       <div className="sf-form-container">
