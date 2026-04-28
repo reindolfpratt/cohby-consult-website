@@ -213,17 +213,36 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       }
       if (!data["00NSj000002uvgn"]) { alert("Please answer the English language test question."); return false; }
     }
+    if (step === 2) {
+      if (data["00NSj000002uvld"].length === 0) { alert("Please select at least one country of interest."); return false; }
+      if (data["00NSj000002uvld"].includes("Other") && !data.countryInterestOther.trim()) {
+        alert("Please specify the country."); return false;
+      }
+    }
+    if (step === 3) {
+      if (!data["00NSj000002uvth"]) { alert("Please tell us how you heard about us."); return false; }
+      if (data["00NSj000002uvth"] === "Other" && !data.hearOther.trim()) {
+        alert("Please specify how you heard about us."); return false;
+      }
+    }
     return true;
   };
 
-  const next = () => {
+  const next = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!validateStep()) return;
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
-  const back = () => setStep((s) => Math.max(s - 1, 0));
+  const back = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    setStep((s) => Math.max(s - 1, 0));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Only allow submission on the final step
+    if (step < STEPS.length - 1) return;
+    
     if (!validateStep()) return;
     setIsSubmitting(true);
 
