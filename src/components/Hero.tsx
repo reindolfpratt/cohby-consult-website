@@ -13,7 +13,6 @@ const Hero = ({ onOpenForm }: HeroProps) => {
       <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-transparent to-primary/20 -z-10" />
       
       {/* Floating Orbs */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-secondary/30 rounded-full blur-3xl" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
       
       {/* Pattern Overlay */}
@@ -23,11 +22,9 @@ const Hero = ({ onOpenForm }: HeroProps) => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-secondary/20 to-primary/20 backdrop-blur-md border-2 border-secondary/50 px-8 py-3 rounded-full mb-8 animate-fade-in shadow-custom-glow">
-            <Sparkles className="w-5 h-5 text-secondary" />
             <span className="text-secondary font-heading font-bold text-base md:text-lg tracking-wide">
               2026-2027 INTAKE OPEN
             </span>
-            <Sparkles className="w-5 h-5 text-secondary" style={{ animationDelay: "0.5s" }} />
           </div>
 
           {/* Main Heading */}
