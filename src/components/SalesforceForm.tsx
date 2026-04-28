@@ -228,20 +228,28 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
     return true;
   };
 
+  const [isChangingStep, setIsChangingStep] = useState(false);
+
   const next = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
+    if (isChangingStep) return;
     if (!validateStep()) return;
+    
+    setIsChangingStep(true);
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    
+    // Add a small cooldown to prevent double-clicks from submitting
+    setTimeout(() => setIsChangingStep(false), 500);
   };
   const back = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Only allow submission on the final step
-    if (step < STEPS.length - 1) return;
+    // Only allow submission if we are on the final step AND not in the middle of a step change
+    if (step < STEPS.length - 1 || isChangingStep) return;
     
     if (!validateStep()) return;
     setIsSubmitting(true);
@@ -333,7 +341,7 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
       <div className="sf-form-container">
         <ProgressBar step={step} total={STEPS.length} />
 
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={onFormSubmit} noValidate>
           {/* ─── Step 1: Personal Details ─────────────────────────────── */}
           {step === 0 && (
             <div className="sf-step">
@@ -588,13 +596,23 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
               </button>
             )}
             <div style={{ flex: 1 }} />
+            
             {step < STEPS.length - 1 ? (
-              <button type="button" className="sf-btn-primary" onClick={next}>
+              <button 
+                type="button" 
+                className="sf-btn-primary" 
+                onClick={next}
+                disabled={isChangingStep}
+              >
                 Save & Continue
                 <ChevronRight size={16} />
               </button>
             ) : (
-              <button type="submit" className="sf-btn-submit" disabled={isSubmitting}>
+              <button 
+                type="submit" 
+                className="sf-btn-submit" 
+                disabled={isSubmitting || isChangingStep}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 size={16} className="sf-spin" />
