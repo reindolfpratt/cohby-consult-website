@@ -248,47 +248,57 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Only allow submission if we are on the final step AND not in the middle of a step change
     if (step < STEPS.length - 1 || isChangingStep) return;
-    
     if (!validateStep()) return;
+    
     setIsSubmitting(true);
 
-    // Build a native form and submit it directly to Salesforce
     const form = nativeFormRef.current;
     if (form) {
-      // Populate hidden inputs
-      const setValue = (name: string, value: string) => {
-        let input = form.querySelector<HTMLInputElement>(`[name="${name}"]`);
-        if (!input) {
-          input = document.createElement("input");
-          input.type = "hidden";
-          input.name = name;
-          form.appendChild(input);
-        }
+      // 1. Clear out any previous dynamic inputs to prevent duplicates
+      form.querySelectorAll('input:not([name="oid"]):not([name="retURL"])').forEach(el => el.remove());
+
+      const payload: Record<string, string> = {};
+
+      const appendField = (name: string, value: string) => {
+        payload[name] = value;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
         input.value = value;
+        form.appendChild(input);
       };
 
-      setValue("first_name", data.first_name);
-      setValue("last_name", data.last_name);
-      setValue("email", data.email);
-      setValue("city", data.city);
-      setValue("state", data.state);
-      setValue("country", data.country);
-      setValue("mobile", data.mobile);
-      setValue(
-        "00NSj000002uvYj",
-        data["00NSj000002uvYj"] === "Other" ? data.educationOther : data["00NSj000002uvYj"]
-      );
-      setValue("00NSj000002uvaL", data["00NSj000002uvaL"]);
-      setValue("00NSj000002uvgn", data["00NSj000002uvgn"]);
-      setValue("00NSj000002uufu", data["00NSj000002uufu"]);
-      // Country of interest – Salesforce expects multiple values with same name
-      const existing = form.querySelectorAll<HTMLInputElement>('[name="00NSj000002uvld"]');
-      existing.forEach((el) => el.remove());
+      // 2. Map Standard Fields
+      appendField("first_name", data.first_name);
+      appendField("last_name", data.last_name);
+      appendField("email", data.email);
+      appendField("city", data.city);
+      appendField("state", data.state);
+      appendField("country", data.country);
+      appendField("mobile", data.mobile);
+      appendField("company", `${data.first_name} ${data.last_name}` || "Individual");
+      appendField("lead_source", "Cohby Website");
+
+      // 3. Map Custom Fields
+      appendField("00NSj000002uvYj", data["00NSj000002uvYj"] === "Other" ? data.educationOther : data["00NSj000002uvYj"]);
+      appendField("00NSj000002uvaL", data["00NSj000002uvaL"]);
+      appendField("00NSj000002uvgn", data["00NSj000002uvgn"]);
+      appendField("00NSj000002uufu", data["00NSj000002uufu"]);
+      appendField("00NSj000002uvor", data["00NSj000002uvor"]);
+      appendField("00NSj000002uvth", data["00NSj000002uvth"] === "Other" ? data.hearOther : data["00NSj000002uvth"]);
+      appendField("00NSj000002uvwv", data["00NSj000002uvwv"] ? "1" : "0");
+      appendField("00NSj000002uvyXMAQ", data["00NSj000002uvyXMAQ"]);
+
+      // 4. Map Record Type (Dual naming for safety)
+      appendField("recordType", "012Sj000002A1o6IAC");
+      appendField("RecordTypeId", "012Sj000002A1o6IAC");
+
+      // 5. Map Countries of Interest (Multi-Select)
       const selectedCountries = data["00NSj000002uvld"].includes("Other")
         ? [...data["00NSj000002uvld"].filter((c) => c !== "Other"), data.countryInterestOther || "Other"]
         : data["00NSj000002uvld"];
+      
       selectedCountries.forEach((c) => {
         const inp = document.createElement("input");
         inp.type = "hidden";
@@ -296,21 +306,21 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
         inp.value = c;
         form.appendChild(inp);
       });
-      setValue("00NSj000002uvor", data["00NSj000002uvor"]);
-      setValue(
-        "00NSj000002uvth",
-        data["00NSj000002uvth"] === "Other" ? data.hearOther : data["00NSj000002uvth"]
-      );
-      setValue("00NSj000002uvwv", data["00NSj000002uvwv"] ? "1" : "0");
-      setValue("00NSj000002uvyXMAQ", data["00NSj000002uvyXMAQ"]);
-      setValue("company", data.first_name + " " + data.last_name || "Online Applicant");
-      setValue("LeadSource", "Web");
 
-      form.target = "sf_submission_frame"; // Submit to the hidden iframe
+      console.log("SFDC SUBMISSION PAYLOAD:", { ...payload, countries: selectedCountries });
+
+      // 6. Submit via iframe
+      form.target = "sf_submission_frame";
       form.submit();
-      setSubmitted(true);
+      
+      // Delay success message slightly to allow form to finish processing
+      setTimeout(() => {
+        setSubmitted(true);
+        setIsSubmitting(false);
+      }, 800);
+    } else {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -336,16 +346,15 @@ const SalesforceForm = ({ onClose }: { onClose?: () => void }) => {
   return (
     <>
       {/* Hidden native form that submits to Salesforce via iframe */}
-      <iframe name="sf_submission_frame" style={{ display: "none" }}></iframe>
+      <iframe name="sf_submission_frame" style={{ position: "absolute", left: "-9999px" }}></iframe>
       <form
         ref={nativeFormRef}
-        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgD000000GzkH"
+        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
         method="POST"
-        style={{ display: "none" }}
+        style={{ position: "absolute", left: "-9999px" }}
       >
         <input type="hidden" name="oid" value="00DgD000000GzkH" />
         <input type="hidden" name="retURL" value="https://www.cohbyconsult.com/" />
-        <input type="hidden" name="company" value="N/A" />
       </form>
 
       <div className="sf-form-container">
