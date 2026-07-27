@@ -1,5 +1,6 @@
 import { GraduationCap, Globe, Award, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FlightAnimation } from "./FlightAnimation";
 
 interface HeroProps {
   onOpenForm: () => void;
@@ -8,8 +9,11 @@ interface HeroProps {
 const Hero = ({ onOpenForm }: HeroProps) => {
   return (
     <section id="home" className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+      {/* Animated Background Sky & Aeroplane Motion */}
+      <FlightAnimation />
+
       {/* Animated Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-hero -z-10" />
+      <div className="absolute inset-0 bg-gradient-hero -z-10 opacity-90" />
       <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-transparent to-primary/20 -z-10" />
       
       {/* Floating Orbs */}
