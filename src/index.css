@@ -291,22 +291,27 @@ All colors MUST be HSL.
 /* Aeroplane & Sky Motion Keyframe Animations */
 @keyframes aeroplaneFlight {
   0% {
-    transform: translate(-10%, 110%) scale(0.7);
+    transform: translate(-15%, 85%) scale(0.75);
     opacity: 0;
   }
-  10% {
+  8% {
     opacity: 1;
   }
   50% {
-    transform: translate(45%, 45%) scale(1.05);
+    transform: translate(45%, 35%) scale(1.1);
+    opacity: 1;
   }
-  90% {
+  92% {
     opacity: 1;
   }
   100% {
-    transform: translate(110%, -10%) scale(0.8);
+    transform: translate(115%, -15%) scale(0.85);
     opacity: 0;
   }
+}
+
+.animate-aeroplane-flight {
+  animation: aeroplaneFlight 15s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
 }
 
 @keyframes flightDash {
