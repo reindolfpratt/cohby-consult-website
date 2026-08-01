@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChevronRight, ChevronLeft, CheckCircle2, Star, Loader2 } from "lucide-react";
 
 interface FeedbackFormData {
@@ -84,11 +84,13 @@ interface FeedbackFormProps {
 }
 
 export default function FeedbackForm({ onClose }: FeedbackFormProps) {
+  const nativeFormRef = useRef<HTMLFormElement>(null);
   const [step, setStep] = useState(0);
   const [stepLocked, setStepLocked] = useState(false);
   const [data, setData] = useState<FeedbackFormData>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const changeStep = (newStep: number) => {
     if (stepLocked) return;
@@ -112,86 +114,62 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
     }
   };
 
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleActualSubmit = async () => {
+  const handleActualSubmit = () => {
     if (stepLocked || isSubmitting) return;
     setIsSubmitting(true);
     setErrorMessage("");
 
-    try {
-      const loginUrl = import.meta.env.VITE_SF_LOGIN_URL || "https://calvaryavenueofchristchapellbg.my.salesforce.com";
-      const clientId = import.meta.env.VITE_SF_CLIENT_ID || atob("M01WRzlTaU1hbEJfYzh4N0VWRjBFTVA1UFdwbnV3QlNBUnRMamlnMzBWVVdCMUNGdFYxZzVJTFFTaGlkbEhYRTNkYmpGSjVLR2tmdXhRX1ZnVDFGUw==");
-      const clientSecret = import.meta.env.VITE_SF_CLIENT_SECRET || atob("OTk0MUEyRjdBNDcyQzgyMEM5OTVFOEI4RTQyRTg1RjBGRDdENTFEMDBGMkNDMUI4MkUzOTQ2ODJEQTg2MTE4OQ==");
-      const username = import.meta.env.VITE_SF_USERNAME || atob("cmVpbmRvbGZAY29oYnljb25zdWx0LmNvbQ==");
-      const password = import.meta.env.VITE_SF_PASSWORD || atob("QWlub29Tb24xIUAyMDE2c0E5OWFnWGpFdUFFcFdsa2tzZjBBZEV4Rw==");
+    const form = nativeFormRef.current;
+    if (form) {
+      // Clear out dynamic inputs
+      form.querySelectorAll('input:not([name="oid"]):not([name="retURL"])').forEach((el) => el.remove());
 
-      const tokenParams = new URLSearchParams();
-      tokenParams.append("grant_type", "password");
-      tokenParams.append("client_id", clientId);
-      tokenParams.append("client_secret", clientSecret);
-      tokenParams.append("username", username);
-      tokenParams.append("password", password);
-
-      const tokenResponse = await fetch(`${loginUrl}/services/oauth2/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: tokenParams.toString(),
-      });
-
-      const tokenData = await tokenResponse.json();
-
-      if (!tokenResponse.ok || !tokenData.access_token) {
-        throw new Error(tokenData.error_description || "Authentication with Salesforce failed.");
-      }
-
-      const payload: Record<string, any> = {
-        First_Name__c: data.first_name,
-        Last_Name__c: data.last_name,
-        Email__c: data.email,
-        Phone__c: data.phone || null,
-        Service_Used__c: data.service_used || null,
-        Destination_Country__c: data.destination_country || null,
-        Service_Date__c: data.service_date || null,
-        Overall_Satisfaction__c: data.overall_satisfaction > 0 ? data.overall_satisfaction : null,
-        Communication_Rating__c: data.communication_rating > 0 ? data.communication_rating : null,
-        Clarity_of_Process_Rating__c: data.clarity_of_process_rating > 0 ? data.clarity_of_process_rating : null,
-        Professionalism_Rating__c: data.professionalism_rating > 0 ? data.professionalism_rating : null,
-        Value_for_Fee_Rating__c: data.value_for_fee_rating > 0 ? data.value_for_fee_rating : null,
-        Application_Visa_Outcome__c: data.application_visa_outcome || null,
-        Outcome_Comments__c: data.outcome_comments || null,
-        What_Went_Well__c: data.what_went_well || null,
-        What_Could_Improve__c: data.what_could_improve || null,
-        Explanation_Gaps__c: data.explanation_gaps || null,
-        Will_You_Recommend_Us_To_Others__c: data.will_you_recommend_us || null,
-        What_Would_You_Tell_Others_About_Us__c: data.what_would_you_tell_others || null,
-        Testimonial_Permission__c: data.testimonial_permission || null,
-        Open_to_Reference_Call__c: data.open_to_reference_call || null,
+      const appendField = (name: string, value: string) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
       };
 
-      const instanceUrl = tokenData.instance_url;
-      const recordResponse = await fetch(`${instanceUrl}/services/data/v67.0/sobjects/Client_Feedback__c/`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${tokenData.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      appendField("first_name", data.first_name);
+      appendField("last_name", data.last_name);
+      appendField("email", data.email);
+      appendField("phone", data.phone);
+      appendField("company", `${data.first_name} ${data.last_name}`.trim() || "Individual");
+      appendField("lead_source", "Website Feedback");
 
-      const recordData = await recordResponse.json();
+      const feedbackData = {
+        service_used: data.service_used,
+        destination_country: data.destination_country,
+        service_date: data.service_date,
+        overall_satisfaction: data.overall_satisfaction,
+        communication_rating: data.communication_rating,
+        clarity_of_process_rating: data.clarity_of_process_rating,
+        professionalism_rating: data.professionalism_rating,
+        value_for_fee_rating: data.value_for_fee_rating,
+        application_visa_outcome: data.application_visa_outcome,
+        outcome_comments: data.outcome_comments,
+        what_went_well: data.what_went_well,
+        what_could_improve: data.what_could_improve,
+        explanation_gaps: data.explanation_gaps,
+        will_you_recommend_us: data.will_you_recommend_us,
+        what_would_you_tell_others: data.what_would_you_tell_others,
+        testimonial_permission: data.testimonial_permission,
+        open_to_reference_call: data.open_to_reference_call,
+      };
 
-      if (!recordResponse.ok) {
-        const message = Array.isArray(recordData) ? recordData[0]?.message : recordData.message;
-        throw new Error(message || "Failed to create feedback record in Salesforce.");
-      }
+      appendField("description", `FEEDBACK_DATA:${JSON.stringify(feedbackData)}`);
 
+      form.target = "sf_feedback_submission_frame";
+      form.submit();
+
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      }, 800);
+    } else {
       setIsSubmitting(false);
-      setSubmitted(true);
-    } catch (err: any) {
-      console.error("Salesforce Submission Error:", err);
-      setIsSubmitting(false);
-      setErrorMessage(err.message || "An unexpected error occurred while submitting to Salesforce.");
     }
   };
 
@@ -230,7 +208,19 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-xl overflow-hidden my-4">
+    <>
+      <iframe name="sf_feedback_submission_frame" style={{ position: "absolute", left: "-9999px" }}></iframe>
+      <form
+        ref={nativeFormRef}
+        action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8"
+        method="POST"
+        style={{ position: "absolute", left: "-9999px" }}
+      >
+        <input type="hidden" name="oid" value="00DgD000000GzkH" />
+        <input type="hidden" name="retURL" value="https://www.cohbyconsult.com/" />
+      </form>
+
+      <div className="w-full max-w-3xl mx-auto bg-card rounded-2xl border border-border shadow-xl overflow-hidden my-4">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary p-6 text-white text-center">
         <h2 className="text-2xl font-heading font-bold mb-1">Client Feedback Survey</h2>
@@ -569,5 +559,6 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
