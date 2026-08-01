@@ -120,7 +120,7 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
     setErrorMessage("");
 
     try {
-      const loginUrl = import.meta.env.VITE_SF_LOGIN_URL || "https://login.salesforce.com";
+      const loginUrl = import.meta.env.VITE_SF_LOGIN_URL || "https://calvaryavenueofchristchapellbg.my.salesforce.com";
       const clientId = import.meta.env.VITE_SF_CLIENT_ID;
       const clientSecret = import.meta.env.VITE_SF_CLIENT_SECRET;
       const username = import.meta.env.VITE_SF_USERNAME;
