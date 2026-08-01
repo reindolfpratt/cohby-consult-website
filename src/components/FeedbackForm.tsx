@@ -85,9 +85,17 @@ interface FeedbackFormProps {
 
 export default function FeedbackForm({ onClose }: FeedbackFormProps) {
   const [step, setStep] = useState(0);
+  const [stepLocked, setStepLocked] = useState(false);
   const [data, setData] = useState<FeedbackFormData>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const changeStep = (newStep: number) => {
+    if (stepLocked) return;
+    setStep(newStep);
+    setStepLocked(true);
+    setTimeout(() => setStepLocked(false), 400);
+  };
 
   const set = (key: keyof FeedbackFormData, val: any) => {
     setData((prev) => ({ ...prev, [key]: val }));
@@ -98,16 +106,17 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !(e.target instanceof HTMLTextAreaElement && e.shiftKey) && step < STEPS.length - 1) {
+    if (e.key === "Enter" && !(e.target instanceof HTMLTextAreaElement) && step < STEPS.length - 1) {
       e.preventDefault();
-      setStep((s) => s + 1);
+      changeStep(step + 1);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (stepLocked) return;
     if (step < STEPS.length - 1) {
-      setStep((s) => s + 1);
+      changeStep(step + 1);
       return;
     }
 
@@ -450,8 +459,9 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
           {step > 0 ? (
             <button
               type="button"
-              onClick={() => setStep((s) => s - 1)}
-              className="flex items-center gap-1 px-4 py-2 rounded-lg border border-input text-foreground font-medium hover:bg-muted transition-colors"
+              onClick={() => changeStep(step - 1)}
+              disabled={stepLocked}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg border border-input text-foreground font-medium hover:bg-muted transition-colors disabled:opacity-50"
             >
               <ChevronLeft size={16} /> Back
             </button>
@@ -460,15 +470,16 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
           {step < STEPS.length - 1 ? (
             <button
               type="button"
-              onClick={() => setStep((s) => s + 1)}
-              className="flex items-center gap-1 px-6 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
+              onClick={() => changeStep(step + 1)}
+              disabled={stepLocked}
+              className="flex items-center gap-1 px-6 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               Next <ChevronRight size={16} />
             </button>
           ) : (
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || stepLocked}
               className="flex items-center gap-2 px-6 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
             >
               {isSubmitting ? (
