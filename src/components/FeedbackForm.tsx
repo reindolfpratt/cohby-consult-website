@@ -112,15 +112,87 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
     }
   };
 
-  const handleActualSubmit = () => {
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleActualSubmit = async () => {
     if (stepLocked || isSubmitting) return;
     setIsSubmitting(true);
+    setErrorMessage("");
 
-    // Simulate submission delay
-    setTimeout(() => {
+    try {
+      const loginUrl = import.meta.env.VITE_SF_LOGIN_URL || "https://login.salesforce.com";
+      const clientId = import.meta.env.VITE_SF_CLIENT_ID;
+      const clientSecret = import.meta.env.VITE_SF_CLIENT_SECRET;
+      const username = import.meta.env.VITE_SF_USERNAME;
+      const password = import.meta.env.VITE_SF_PASSWORD;
+
+      const tokenParams = new URLSearchParams();
+      tokenParams.append("grant_type", "password");
+      tokenParams.append("client_id", clientId);
+      tokenParams.append("client_secret", clientSecret);
+      tokenParams.append("username", username);
+      tokenParams.append("password", password);
+
+      const tokenResponse = await fetch(`${loginUrl}/services/oauth2/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: tokenParams.toString(),
+      });
+
+      const tokenData = await tokenResponse.json();
+
+      if (!tokenResponse.ok || !tokenData.access_token) {
+        throw new Error(tokenData.error_description || "Authentication with Salesforce failed.");
+      }
+
+      const payload: Record<string, any> = {
+        First_Name__c: data.first_name,
+        Last_Name__c: data.last_name,
+        Email__c: data.email,
+        Phone__c: data.phone || null,
+        Service_Used__c: data.service_used || null,
+        Destination_Country__c: data.destination_country || null,
+        Service_Date__c: data.service_date || null,
+        Overall_Satisfaction__c: data.overall_satisfaction > 0 ? data.overall_satisfaction : null,
+        Communication_Rating__c: data.communication_rating > 0 ? data.communication_rating : null,
+        Clarity_of_Process_Rating__c: data.clarity_of_process_rating > 0 ? data.clarity_of_process_rating : null,
+        Professionalism_Rating__c: data.professionalism_rating > 0 ? data.professionalism_rating : null,
+        Value_for_Fee_Rating__c: data.value_for_fee_rating > 0 ? data.value_for_fee_rating : null,
+        Application_Visa_Outcome__c: data.application_visa_outcome || null,
+        Outcome_Comments__c: data.outcome_comments || null,
+        What_Went_Well__c: data.what_went_well || null,
+        What_Could_Improve__c: data.what_could_improve || null,
+        Explanation_Gaps__c: data.explanation_gaps || null,
+        Will_You_Recommend_Us_To_Others__c: data.will_you_recommend_us || null,
+        What_Would_You_Tell_Others_About_Us__c: data.what_would_you_tell_others || null,
+        Testimonial_Permission__c: data.testimonial_permission || null,
+        Open_to_Reference_Call__c: data.open_to_reference_call || null,
+      };
+
+      const instanceUrl = tokenData.instance_url;
+      const recordResponse = await fetch(`${instanceUrl}/services/data/v67.0/sobjects/Client_Feedback__c/`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${tokenData.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const recordData = await recordResponse.json();
+
+      if (!recordResponse.ok) {
+        const message = Array.isArray(recordData) ? recordData[0]?.message : recordData.message;
+        throw new Error(message || "Failed to create feedback record in Salesforce.");
+      }
+
       setIsSubmitting(false);
       setSubmitted(true);
-    }, 1000);
+    } catch (err: any) {
+      console.error("Salesforce Submission Error:", err);
+      setIsSubmitting(false);
+      setErrorMessage(err.message || "An unexpected error occurred while submitting to Salesforce.");
+    }
   };
 
   if (submitted) {
@@ -185,6 +257,12 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
 
       {/* Form Content */}
       <div className="p-6 md:p-8 space-y-6">
+        {errorMessage && (
+          <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium">
+            {errorMessage}
+          </div>
+        )}
+
         {/* Step 0: Basic Details */}
         {step === 0 && (
           <div className="space-y-4 animate-fade-in">
