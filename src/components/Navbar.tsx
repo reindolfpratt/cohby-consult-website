@@ -16,6 +16,7 @@ const Navbar = ({ onOpenForm }: NavbarProps) => {
     { name: "What We Do", href: "/what-we-do" },
     { name: "Programs", href: "/programs" },
     { name: "About Us", href: "/about-us" },
+    { name: "Give Us Feedback", href: "/give-us-feedback" },
     { name: "Contact", href: "/contact-us" },
   ];
 

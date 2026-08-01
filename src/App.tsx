@@ -17,6 +17,7 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import GiveUsFeedback from "./pages/GiveUsFeedback";
 import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/what-we-do" element={<WhatWeDo />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/give-us-feedback" element={<GiveUsFeedback />} />
           <Route path="/study-in-denmark" element={<StudyInDenmark />} />
           <Route path="/study-in-austria" element={<StudyInAustria />} />
           <Route path="/study-in-usa" element={<StudyInUSA />} />
