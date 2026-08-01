@@ -97,8 +97,20 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
     set(key, rating);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !(e.target instanceof HTMLTextAreaElement && e.shiftKey) && step < STEPS.length - 1) {
+      e.preventDefault();
+      setStep((s) => s + 1);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (step < STEPS.length - 1) {
+      setStep((s) => s + 1);
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Simulate submission delay
@@ -169,7 +181,7 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
       </div>
 
       {/* Form Content */}
-      <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 md:p-8 space-y-6">
         {/* Step 0: Basic Details */}
         {step === 0 && (
           <div className="space-y-4 animate-fade-in">
