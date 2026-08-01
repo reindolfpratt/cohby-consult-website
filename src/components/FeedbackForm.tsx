@@ -112,14 +112,8 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (stepLocked) return;
-    if (step < STEPS.length - 1) {
-      changeStep(step + 1);
-      return;
-    }
-
+  const handleActualSubmit = () => {
+    if (stepLocked || isSubmitting) return;
     setIsSubmitting(true);
 
     // Simulate submission delay
@@ -190,7 +184,7 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
       </div>
 
       {/* Form Content */}
-      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="p-6 md:p-8 space-y-6">
+      <div className="p-6 md:p-8 space-y-6">
         {/* Step 0: Basic Details */}
         {step === 0 && (
           <div className="space-y-4 animate-fade-in">
@@ -478,7 +472,8 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
             </button>
           ) : (
             <button
-              type="submit"
+              type="button"
+              onClick={handleActualSubmit}
               disabled={isSubmitting || stepLocked}
               className="flex items-center gap-2 px-6 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
             >
@@ -494,7 +489,7 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
             </button>
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 }
