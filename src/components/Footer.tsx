@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/cohby-logo.png";
 
@@ -77,17 +77,32 @@ const Footer = () => {
               © {new Date().getFullYear()} Cohby Consult. All rights reserved.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-primary-foreground/70 hover:text-secondary transition-colors" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/profile.php?id=100071205317842"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-foreground/70 hover:text-secondary transition-colors"
+                aria-label="Facebook"
+              >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-primary-foreground/70 hover:text-secondary transition-colors" aria-label="Instagram">
+              <a
+                href="https://www.instagram.com/cohby_consult/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-foreground/70 hover:text-secondary transition-colors"
+                aria-label="Instagram"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-primary-foreground/70 hover:text-secondary transition-colors" aria-label="LinkedIn">
+              <a
+                href="https://www.linkedin.com/company/cohby-consult/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-foreground/70 hover:text-secondary transition-colors"
+                aria-label="LinkedIn"
+              >
                 <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-primary-foreground/70 hover:text-secondary transition-colors" aria-label="Twitter">
-                <Twitter className="w-5 h-5" />
               </a>
             </div>
           </div>
