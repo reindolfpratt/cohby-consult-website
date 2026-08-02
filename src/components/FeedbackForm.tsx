@@ -8,7 +8,9 @@ interface FeedbackFormData {
   email: string;
   phone: string;
   service_used: string;
+  service_used_other: string;
   destination_country: string;
+  destination_country_other: string;
   service_date: string;
 
   // Step 2: Ratings (1-5)
@@ -40,7 +42,9 @@ const INITIAL_DATA: FeedbackFormData = {
   email: "",
   phone: "",
   service_used: "",
+  service_used_other: "",
   destination_country: "",
+  destination_country_other: "",
   service_date: "",
   overall_satisfaction: 0,
   communication_rating: 0,
@@ -139,10 +143,22 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
       appendField("company", `${data.first_name} ${data.last_name}`.trim() || "Individual");
       appendField("lead_source", "Website Feedback");
 
+      const finalServiceUsed = data.service_used === "Other" && data.service_used_other.trim()
+        ? `Other: ${data.service_used_other.trim()}`
+        : data.service_used;
+
+      const finalDestinationCountry = data.destination_country === "Other" && data.destination_country_other.trim()
+        ? `Other: ${data.destination_country_other.trim()}`
+        : data.destination_country;
+
+      const finalServiceDate = data.service_date
+        ? (data.service_date.length === 7 ? `${data.service_date}-01` : data.service_date)
+        : "";
+
       const feedbackData = {
-        service_used: data.service_used,
-        destination_country: data.destination_country,
-        service_date: data.service_date,
+        service_used: finalServiceUsed,
+        destination_country: finalDestinationCountry,
+        service_date: finalServiceDate,
         overall_satisfaction: data.overall_satisfaction,
         communication_rating: data.communication_rating,
         clarity_of_process_rating: data.clarity_of_process_rating,
@@ -319,6 +335,15 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
+                {data.service_used === "Other" && (
+                  <input
+                    type="text"
+                    value={data.service_used_other}
+                    onChange={(e) => set("service_used_other", e.target.value)}
+                    placeholder="Please specify your service..."
+                    className="mt-2 w-full px-3.5 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none animate-fade-in"
+                  />
+                )}
               </div>
 
               <div>
@@ -333,17 +358,29 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
+                {data.destination_country === "Other" && (
+                  <input
+                    type="text"
+                    value={data.destination_country_other}
+                    onChange={(e) => set("destination_country_other", e.target.value)}
+                    placeholder="Please specify destination country..."
+                    className="mt-2 w-full px-3.5 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none animate-fade-in"
+                  />
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Service Date</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Service Date (Month & Year)</label>
               <input
-                type="date"
+                type="month"
                 value={data.service_date}
                 onChange={(e) => set("service_date", e.target.value)}
                 className="w-full px-3.5 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Please select the month and year when you received our consulting service.
+              </p>
             </div>
           </div>
         )}
