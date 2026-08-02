@@ -336,13 +336,18 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
                   ))}
                 </select>
                 {data.service_used === "Other" && (
-                  <input
-                    type="text"
-                    value={data.service_used_other}
-                    onChange={(e) => set("service_used_other", e.target.value)}
-                    placeholder="Please specify your service..."
-                    className="mt-2 w-full px-3.5 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none animate-fade-in"
-                  />
+                  <div className="mt-2.5 p-3 rounded-xl bg-primary/5 border-2 border-primary/40 space-y-1 animate-fade-in shadow-sm">
+                    <label className="block text-xs font-semibold text-primary">
+                      Please specify the service you used: *
+                    </label>
+                    <input
+                      type="text"
+                      value={data.service_used_other}
+                      onChange={(e) => set("service_used_other", e.target.value)}
+                      placeholder="e.g. Scholarship Application Assistance"
+                      className="w-full px-3.5 py-2 rounded-lg border border-primary/30 bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none text-sm font-medium"
+                    />
+                  </div>
                 )}
               </div>
 
@@ -359,13 +364,18 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
                   ))}
                 </select>
                 {data.destination_country === "Other" && (
-                  <input
-                    type="text"
-                    value={data.destination_country_other}
-                    onChange={(e) => set("destination_country_other", e.target.value)}
-                    placeholder="Please specify destination country..."
-                    className="mt-2 w-full px-3.5 py-2 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none animate-fade-in"
-                  />
+                  <div className="mt-2.5 p-3 rounded-xl bg-primary/5 border-2 border-primary/40 space-y-1 animate-fade-in shadow-sm">
+                    <label className="block text-xs font-semibold text-primary">
+                      Please specify your destination country: *
+                    </label>
+                    <input
+                      type="text"
+                      value={data.destination_country_other}
+                      onChange={(e) => set("destination_country_other", e.target.value)}
+                      placeholder="e.g. Germany, Australia, USA"
+                      className="w-full px-3.5 py-2 rounded-lg border border-primary/30 bg-background text-foreground focus:ring-2 focus:ring-primary focus:outline-none text-sm font-medium"
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -580,7 +590,7 @@ export default function FeedbackForm({ onClose }: FeedbackFormProps) {
               type="button"
               onClick={handleActualSubmit}
               disabled={isSubmitting || stepLocked}
-              className="flex items-center gap-2 px-6 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-bold shadow-md hover:shadow-lg hover:opacity-95 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
